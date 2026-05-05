@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface IReservaRepository extends JpaRepository<Reserva, Long>{
-
+    
     Optional<Reserva> findById(Long id_reserva);
     
 }
