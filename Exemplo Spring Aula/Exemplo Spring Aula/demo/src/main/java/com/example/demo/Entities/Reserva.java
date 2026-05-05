@@ -29,7 +29,8 @@ public class Reserva {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_reserva;
+    @Column(name = "id_reserva")
+    private Long id;
 
     @Column(nullable = false)
     private Long cliente_Id;
