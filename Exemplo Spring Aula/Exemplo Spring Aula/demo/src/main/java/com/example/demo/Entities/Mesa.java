@@ -1,7 +1,11 @@
 package com.example.demo.Entities;
 
+import com.example.demo.Enums.StatusMesa;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +34,8 @@ public class Mesa {
     @Column(nullable = false)
     private Integer capacidade;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "Livre"; // perguntar ao professor se pode utilizar ENUM nesse ponto pois nesse sentido e o ideal
+    private StatusMesa status = StatusMesa.Livre;
 
 }
