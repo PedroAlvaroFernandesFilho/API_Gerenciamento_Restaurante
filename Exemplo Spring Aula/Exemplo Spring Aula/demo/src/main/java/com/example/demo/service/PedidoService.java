@@ -27,7 +27,7 @@ public class PedidoService {
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
 
-        ItemDeCardapio item = itemRepository.findById(itemId)
+        Cardapio item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
 
         if (quantidade == null || quantidade <= 0) {

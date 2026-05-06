@@ -16,7 +16,7 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private ItemDeCardapio item;
+    private Cardapio item;
 
     private Integer quantidade;
 
@@ -38,11 +38,11 @@ public class Pedido {
         this.reserva = reserva;
     }
 
-    public ItemDeCardapio getItem() {
+    public Cardapio getItem() {
         return item;
     }
 
-    public void setItem(ItemDeCardapio item) {
+    public void setItem(Cardapio item) {
         this.item = item;
     }
 
