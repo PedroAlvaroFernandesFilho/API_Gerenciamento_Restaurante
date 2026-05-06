@@ -12,6 +12,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,11 +34,13 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_reserva;
 
-    @Column(nullable = false)
-    private Long cliente_Id;
+    @ManyToOne
+    @JoinColumn(name= "cliente_id", nullable = false)
+    private Cliente cliente_Id;
 
-    @Column(nullable = false)
-    private Long mesa_Id;
+    @OneToOne
+    @JoinColumn(name = "mesa_id", nullable = false)
+    private Mesa mesa_Id;
 
     @Column(nullable = false)
     private LocalDateTime dataReserva;
