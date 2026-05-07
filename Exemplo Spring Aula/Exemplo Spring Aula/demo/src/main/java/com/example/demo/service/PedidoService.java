@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.Entities.*;
-import com.example.demo.repository.*;
+import com.example.demo.repository.ICardapioRepository;
+import com.example.demo.repository.IReservaRepository;
+import com.example.demo.repository.IPedidoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,11 +14,11 @@ public class PedidoService {
 
     private final IPedidoRepository pedidoRepository;
     private final IReservaRepository reservaRepository;
-    private final IItemDeCardapioRepository itemRepository;
+    private final ICardapioRepository itemRepository;
 
     public PedidoService(IPedidoRepository pedidoRepository,
                          IReservaRepository reservaRepository,
-                         IItemDeCardapioRepository itemRepository) {
+                         ICardapioRepository itemRepository) {
         this.pedidoRepository = pedidoRepository;
         this.reservaRepository = reservaRepository;
         this.itemRepository = itemRepository;
