@@ -6,11 +6,11 @@ import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.mapper.UsuarioMapper;
 import com.example.demo.repository.IUsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -27,16 +27,20 @@ public class UsuarioService {
         return usuarioMapper.toDTOList(usuarioRepository.findAll());
     }
 
-    public Optional<UsuarioDTO> buscarPorId(Long id) {
+    public Optional<UsuarioDTO> buscarPorId(@NonNull Long id) {
         return usuarioRepository.findById(id).map(usuarioMapper::toDTO);
     }
 
-    public UsuarioDTO salvar(UsuarioDTO usuarioDTO) {
+    public UsuarioDTO salvar(@NonNull UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
-        return usuarioMapper.toDTO(usuarioRepository.save(usuario));
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        if (savedUsuario == null) {
+            throw new RuntimeException("Erro ao salvar usuário");
+        }
+        return usuarioMapper.toDTO(savedUsuario);
     }
 
-    public void deletar(Long id) {
+    public void deletar(@NonNull Long id) {
         usuarioRepository.deleteById(id);
     }
 }

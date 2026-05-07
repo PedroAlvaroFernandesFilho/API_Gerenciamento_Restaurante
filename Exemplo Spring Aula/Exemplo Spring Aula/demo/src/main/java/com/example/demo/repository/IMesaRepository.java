@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface IMesaRepository extends JpaRepository<Mesa, Long>{
-
-    Optional<Mesa> findById(Long Id_mesa);
-    
 }
+
+

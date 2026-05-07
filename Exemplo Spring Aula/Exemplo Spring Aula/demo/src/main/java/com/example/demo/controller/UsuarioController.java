@@ -3,10 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
 
 import com.example.demo.dto.UsuarioDTO;
 import com.example.demo.service.UsuarioService;
@@ -34,7 +31,7 @@ public class UsuarioController {
 
     @Operation(summary = "Busca um usuário por ID", description = "Retorna os detalhes de um usuário específico")
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable @NonNull Long id) {
         Optional<UsuarioDTO> usuarioDTO = usuarioService.buscarPorId(id);
         return usuarioDTO.map(ResponseEntity::ok)
                          .orElseGet(() -> ResponseEntity.notFound().build());
@@ -42,7 +39,7 @@ public class UsuarioController {
 
     @Operation(summary = "Cria um novo usuário", description = "Cadastra um novo usuário no sistema")
     @PostMapping
-    public ResponseEntity<ApiResponse<UsuarioDTO>> criarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<ApiResponse<UsuarioDTO>> criarUsuario(@Valid @RequestBody @NonNull UsuarioDTO usuarioDTO) {
         try {
             // Tenta salvar o usuário
             UsuarioDTO savedUsuario = usuarioService.salvar(usuarioDTO);
@@ -65,7 +62,7 @@ public class UsuarioController {
 
     @Operation(summary = "Deleta um usuário", description = "Remove um usuário do sistema pelo ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarUsuario(@PathVariable @NonNull Long id) {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }

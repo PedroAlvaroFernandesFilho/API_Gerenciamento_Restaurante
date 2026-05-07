@@ -1,22 +1,24 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
 public class PedidoDTO {
 
     private Long id;
-    private Long reservaId;
-    private Long itemId;
-    private Integer quantidade;
-    private BigDecimal valorTotal;
-    public void setValorTotal(Object valorTotal2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setValorTotal'");
-    }
-    public void setQuantidade(Object quantidade2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setQuantidade'");
-    }
 
-    // getters e setters
+    @NotBlank(message = "O Id da reserva e obrigatorio")
+    private Long reservaId;
+
+    @NotBlank(message = "O Id do item e obrigatorio")
+    private Long itemId;
+
+    @NotBlank(message = "A quantidade e obrigatoria")
+    private Integer quantidade;
+
+    private BigDecimal valorTotal;
 }
