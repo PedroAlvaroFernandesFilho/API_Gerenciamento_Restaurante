@@ -26,7 +26,7 @@ public class Mesa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_mesa;
+    private Long id;
 
     @Column(nullable = false)
     private Integer numero_mesa;
