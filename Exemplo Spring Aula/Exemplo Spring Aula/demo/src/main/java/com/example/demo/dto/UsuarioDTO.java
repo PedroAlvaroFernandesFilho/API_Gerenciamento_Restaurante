@@ -14,10 +14,10 @@ public class UsuarioDTO {
     
     private Long id;
 
-    @NotBlank(message = "O nome é obrigatório")
+    @NotBlank(message = "O nome é obrigatorio")
     private String nome;
 
-    @NotBlank(message = "O CPF é obrigatório")
+    @NotBlank(message = "O CPF e obrigatório")
     @Size(min = 11, max = 11, message = "O CPF deve ter 11 caracteres")
     private String cpf;
 

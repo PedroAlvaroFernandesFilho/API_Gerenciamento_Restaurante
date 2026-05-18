@@ -14,7 +14,6 @@ public class Cardapio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_cardapio")
     private Long id;
 
     @Column(nullable = false)

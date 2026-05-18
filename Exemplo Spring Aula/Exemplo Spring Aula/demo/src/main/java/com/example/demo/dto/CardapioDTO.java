@@ -11,12 +11,12 @@ public class CardapioDTO {
 
     private Long id;
 
-    @NotBlank(message = "Nome é obrigatório")
+    @NotBlank(message = "Nome e obrigatorio")
     private String nome;
 
-    @NotBlank(message = "Descrição é obrigatório")
+    @NotBlank(message = "Descrição e obrigatorio")
     private String descricao;
 
-    @NotNull(message = "Preço é obrigatório")
+    @NotNull(message = "Preço e obrigatorio")
     private BigDecimal preco;
 }
