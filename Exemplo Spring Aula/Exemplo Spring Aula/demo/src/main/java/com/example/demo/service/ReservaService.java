@@ -1,9 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.Entities.Mesa;
 import com.example.demo.Entities.Reserva;
+import com.example.demo.Enums.StatusReserva;
 import com.example.demo.dto.ReservaDTO;
 import com.example.demo.mapper.ReservaMapper;
 import com.example.demo.repository.IReservaRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +41,20 @@ public class ReservaService {
 
     public void deletar(Long id) {
         reservaRepository.deleteById(id);
-}
+
+    }
+
+    @Transactional
+    public ReservaDTO atualizaStatus(Long id, StatusReserva novoStatus) {
+        Reserva reserva = reservaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("reserva não encontrada utilizando id: " + id));
+
+        reserva.setStatus(novoStatus);
+        return reservaMapper.toDTO(reservaRepository.save(reserva));
+    }
+
+    public Optional<ReservaDTO> buscarReservasPorCliente(Long clienteId){
+        return reservaRepository.findByClienteId(clienteId);
+    }
+
 }

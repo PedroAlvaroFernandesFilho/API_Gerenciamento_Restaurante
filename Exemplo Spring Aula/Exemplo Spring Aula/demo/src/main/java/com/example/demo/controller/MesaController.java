@@ -8,14 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.demo.Enums.StatusMesa;
 import com.example.demo.dto.MesaDTO;
 import com.example.demo.service.MesaService;
 import com.example.demo.service.Utils.ApiResponse;
 import com.example.demo.service.Utils.ErrorResponse;
+import com.example.demo.service.Utils.MesaStatusRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @Tag(name = "Mesas", description = "Endpoints para gerenciamento de Mesas")
 @RestController
@@ -25,24 +31,9 @@ public class MesaController {
     @Autowired
     private MesaService mesaService;
 
-    @Operation(summary = "Lista todas as mesas", description = "Retorna uma lista com todas as mesas cadastradas")
-    @GetMapping
-    public ResponseEntity<List<MesaDTO>> listarMesas() {
-        List<MesaDTO> mesa = mesaService.listarTodos();
-        return ResponseEntity.ok(mesa);
-    }
-
-    @Operation(summary = "Busca Mesa por ID Especifico", description = "Retorna os detalhes de uma mesa específica")
-    @GetMapping("/{id}")
-    public ResponseEntity<MesaDTO> buscarPorId(@PathVariable Long id) {
-        Optional<MesaDTO> mesaDTO = mesaService.buscarPorId(id);
-        return mesaDTO.map(ResponseEntity::ok)
-                         .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     @Operation(summary = "Cria uma nova Mesa", description = "Cadastra uma nova Mesa no sistema")
     @PostMapping
-    public ResponseEntity<ApiResponse<MesaDTO>> criarUsuario(@Valid @RequestBody MesaDTO mesaDTO) {
+    public ResponseEntity<ApiResponse<MesaDTO>> criarMesa(@Valid @RequestBody MesaDTO mesaDTO) {
         try {
             // Tenta salvar a Mesa
             MesaDTO savedMesa = mesaService.salvar(mesaDTO);
@@ -61,6 +52,41 @@ public class MesaController {
             ApiResponse<MesaDTO> response = new ApiResponse<>(errorResponse);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @Operation(summary = "Lista todas as mesas", description = "Retorna uma lista com todas as mesas cadastradas")
+    @GetMapping
+    public ResponseEntity<List<MesaDTO>> listarMesas() {
+        List<MesaDTO> mesa = mesaService.listarTodos();
+        return ResponseEntity.ok(mesa);
+    }
+
+    @Operation(summary = "Lista mesas com status Livre", description = "Lista mesas com status Livre")
+    @GetMapping("/disponiveis")
+    public ResponseEntity<MesaDTO> buscarPorStatus(@RequestParam StatusMesa status) {
+        Optional<MesaDTO> mesaDTO = mesaService.buscarPorStatus(status);
+        return mesaDTO.map(ResponseEntity::ok)
+                         .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Busca Mesa por ID Especifico", description = "Obtém informações de uma mesa específica pelo ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<MesaDTO> buscarPorId(@PathVariable Long id) {
+        Optional<MesaDTO> mesaDTO = mesaService.buscarPorId(id);
+        return mesaDTO.map(ResponseEntity::ok)
+                         .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MesaDTO> atualizarMesa(@PathVariable Long id, @RequestBody MesaDTO mesaDTO) {
+        MesaDTO mesaAtualizada = mesaService.atualizarMesa(id, mesaDTO);
+        return ResponseEntity.ok(mesaAtualizada);
+    }
+    
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<MesaDTO> atualizarStatus(@PathVariable Long id, @RequestBody MesaStatusRequest request) {
+        MesaDTO statusAtualizado = mesaService.atualizarStatus(id, request.status());
+        return ResponseEntity.ok(statusAtualizado);
     }
 
     @Operation(summary = "Deleta uma Mesa", description = "Remove uma Mesa do sistema pelo ID")

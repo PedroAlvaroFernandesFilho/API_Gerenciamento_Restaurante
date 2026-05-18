@@ -51,6 +51,6 @@ public class Reserva {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusReserva status = StatusReserva.Confirmada;
+    private StatusReserva status = StatusReserva.CONFIRMADA;
 
 }
