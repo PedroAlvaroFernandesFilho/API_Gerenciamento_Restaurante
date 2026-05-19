@@ -53,8 +53,12 @@ public class ReservaService {
         return reservaMapper.toDTO(reservaRepository.save(reserva));
     }
 
-    public Optional<ReservaDTO> buscarReservasPorCliente(Long clienteId){
-        return reservaRepository.findByClienteId(clienteId);
+    public List<ReservaDTO> buscarReservasPorCliente(Long cliente_Id){
+        List<Reserva> reservas = (List<Reserva>) reservaRepository.findByClienteId(cliente_Id);
+        return reservas.stream()
+                       .map(reservaMapper::toDTO)
+                       .collect(Collectors.toList());
+    
     }
 
 }

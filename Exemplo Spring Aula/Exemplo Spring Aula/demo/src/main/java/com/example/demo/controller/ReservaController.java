@@ -8,13 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.Enums.StatusMesa;
 import com.example.demo.dto.ReservaDTO;
-import com.example.demo.service.MesaService;
 import com.example.demo.service.ReservaService;
 import com.example.demo.service.Utils.ApiResponse;
 import com.example.demo.service.Utils.ErrorResponse;
-import com.example.demo.service.Utils.MesaStatusRequest;
 import com.example.demo.service.Utils.ReservaStatusRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,7 +68,7 @@ public class ReservaController {
     @Operation(summary = "Lista reservas de um cliente", description = "Lista todas as reservas de um cliente especifico")
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<ReservaDTO> ReservasDoCliente(@PathVariable Long clienteId) {
-        Optional<ReservaDTO> reservaDTO = reservaService.buscarReservasPorCliente(clienteId);
+        List<ReservaDTO> reservaDTO = reservaService.buscarReservasPorCliente(clienteId);
         return reservaDTO.map(ResponseEntity::ok)
                          .orElseGet(() -> ResponseEntity.notFound().build());
     }

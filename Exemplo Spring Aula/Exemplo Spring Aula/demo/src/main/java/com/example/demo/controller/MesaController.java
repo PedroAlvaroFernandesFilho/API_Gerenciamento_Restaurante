@@ -18,9 +18,6 @@ import com.example.demo.service.Utils.MesaStatusRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Tag(name = "Mesas", description = "Endpoints para gerenciamento de Mesas")
@@ -77,12 +74,14 @@ public class MesaController {
                          .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Atualiza dados da Mesa", description = "Atualiza alguns dados da Mesa")
     @PutMapping("/{id}")
     public ResponseEntity<MesaDTO> atualizarMesa(@PathVariable Long id, @RequestBody MesaDTO mesaDTO) {
         MesaDTO mesaAtualizada = mesaService.atualizarMesa(id, mesaDTO);
         return ResponseEntity.ok(mesaAtualizada);
     }
     
+    @Operation(summary = "Atualiza Status da Mesa", description = "Atualiza apenas o Status da Mesa")
     @PatchMapping("/{id}/status")
     public ResponseEntity<MesaDTO> atualizarStatus(@PathVariable Long id, @RequestBody MesaStatusRequest request) {
         MesaDTO statusAtualizado = mesaService.atualizarStatus(id, request.status());

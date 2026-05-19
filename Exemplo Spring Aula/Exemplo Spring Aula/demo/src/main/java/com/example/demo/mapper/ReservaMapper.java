@@ -13,11 +13,11 @@ import com.example.demo.dto.ReservaDTO;
 @Mapper(componentModel = "spring")
 public interface ReservaMapper {
 
-    @Mapping(source = "cliente_Id.id", target = "cliente_Id")
+    @Mapping(source = "cliente.id", target = "cliente_Id")
     @Mapping(source = "mesa_Id.id", target = "mesa_Id")
     ReservaDTO toDTO(Reserva reserva);
 
-    @Mapping(source = "cliente_Id", target = "cliente_Id")
+    @Mapping(source = "cliente_Id", target = "cliente")
     @Mapping(source = "mesa_Id", target = "mesa_Id")
     Reserva toEntity(ReservaDTO reservaDTO);
 

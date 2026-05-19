@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -45,9 +46,9 @@ class PedidoServiceTest {
     void setUp() {
         reserva = new Reserva();
         reserva.setId(1L);
-        reserva.setCliente_Id(null);
+        reserva.setCliente(null);
         reserva.setMesa_Id(null);
-        reserva.setDataReserva(LocalDateTime.now());
+        reserva.setDataReserva(LocalDate.now());
         reserva.setHoraReserva(LocalTime.now());
         reserva.setStatus(null);
 

@@ -1,6 +1,6 @@
 package com.example.demo.Entities;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.example.demo.Enums.StatusReserva;
@@ -37,14 +37,14 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name= "cliente_id", nullable = false)
-    private Cliente cliente_Id;
+    private Cliente cliente;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "mesa_id", nullable = false)
     private Mesa mesa_Id;
 
     @Column(nullable = false)
-    private LocalDateTime dataReserva;
+    private LocalDate dataReserva;
     
     @Column(nullable = false)
     private LocalTime horaReserva;
