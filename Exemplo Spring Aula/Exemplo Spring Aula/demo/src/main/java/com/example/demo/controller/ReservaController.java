@@ -67,10 +67,14 @@ public class ReservaController {
 
     @Operation(summary = "Lista reservas de um cliente", description = "Lista todas as reservas de um cliente especifico")
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<ReservaDTO> ReservasDoCliente(@PathVariable Long clienteId) {
+    public ResponseEntity<List<ReservaDTO>> ReservasDoCliente(@PathVariable Long clienteId) {
         List<ReservaDTO> reservaDTO = reservaService.buscarReservasPorCliente(clienteId);
-        return reservaDTO.map(ResponseEntity::ok)
-                         .orElseGet(() -> ResponseEntity.notFound().build());
+        
+        if(reservaDTO.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(reservaDTO);
     }
     
     @Operation(summary = "Atualiza Status da Reserva", description = "Atualiza o status de uma reserva para Confirmada, Cancelada ou Concluída.")    

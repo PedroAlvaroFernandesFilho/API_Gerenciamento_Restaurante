@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.Entities.Mesa;
 import com.example.demo.Entities.Reserva;
 import com.example.demo.Enums.StatusReserva;
 import com.example.demo.dto.ReservaDTO;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservaService {
@@ -54,11 +52,8 @@ public class ReservaService {
     }
 
     public List<ReservaDTO> buscarReservasPorCliente(Long cliente_Id){
-        List<Reserva> reservas = (List<Reserva>) reservaRepository.findByClienteId(cliente_Id);
-        return reservas.stream()
-                       .map(reservaMapper::toDTO)
-                       .collect(Collectors.toList());
-    
+        List<Reserva> reservas = reservaRepository.findByClienteId(cliente_Id);
+        
+        return reservaMapper.toDTOList(reservas);
     }
-
 }
