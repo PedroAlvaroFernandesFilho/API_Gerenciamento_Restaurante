@@ -27,13 +27,13 @@ public class PedidoService {
     public Pedido criarPedido(Long reservaId, Long itemId, Integer quantidade) {
 
         Reserva reserva = reservaRepository.findById(reservaId)
-                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Reserva nao encontrada"));
 
         Cardapio item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Item nao encontrado"));
 
         if (quantidade == null || quantidade <= 0) {
-            throw new RuntimeException("Quantidade inválida");
+            throw new RuntimeException("Quantidade invalida");
         }
 
         BigDecimal total = item.getPreco()
@@ -54,7 +54,7 @@ public class PedidoService {
 
     public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Pedido nao encontrado"));
     }
 
     public List<Pedido> listarPorReserva(Long reservaId) {

@@ -20,7 +20,6 @@ public class CardapioController {
         this.repository = repository;
     }
 
-
     @PostMapping
     public Cardapio adicionar(@Valid @RequestBody CardapioDTO dto) {
 
