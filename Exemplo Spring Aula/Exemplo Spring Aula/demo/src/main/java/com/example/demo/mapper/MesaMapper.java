@@ -1,10 +1,12 @@
 package com.example.demo.mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.mapstruct.Mapper;
 
 import com.example.demo.Entities.Mesa;
+import com.example.demo.Enums.StatusMesa;
 import com.example.demo.dto.MesaDTO;
 
 @Mapper(componentModel = "spring")

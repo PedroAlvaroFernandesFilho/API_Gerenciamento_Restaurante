@@ -42,8 +42,9 @@ public class MesaService {
         mesaRepository.deleteById(id);
     }
 
-    public Optional<MesaDTO> buscarPorStatus(StatusMesa status) {
-        throw new UnsupportedOperationException("Unimplemented method 'buscarPorStatus'");
+    public Optional<MesaDTO> buscarPorStatus(StatusMesa stastus) {
+        Optional<MesaDTO> mesa = mesaRepository.findByStatus(status);
+        return mesaMapper.toDTO(mesa);
     }
 
     public MesaDTO atualizarMesa(Long id, MesaDTO mesaDTO){
