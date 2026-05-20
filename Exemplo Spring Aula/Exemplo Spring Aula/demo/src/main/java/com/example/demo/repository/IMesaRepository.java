@@ -8,13 +8,11 @@ import com.example.demo.Entities.Mesa;
 import java.util.Optional;
 import java.util.List;
 import com.example.demo.Enums.StatusMesa;
-import com.example.demo.dto.MesaDTO;
-
 
 @Repository
 public interface IMesaRepository extends JpaRepository<Mesa, Long>{
 
     Optional<Mesa> findById(Long id);
     
-    Optional<MesaDTO> findByStatus(StatusMesa status);
+    List<Mesa> findByStatus(StatusMesa status);
 }

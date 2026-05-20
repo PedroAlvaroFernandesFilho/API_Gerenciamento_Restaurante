@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,10 +12,10 @@ public class MesaDTO {
 
     private Long id;
 
-    @NotBlank(message = "Numero da mesa e obrigatorio")
+    @NotNull(message = "Numero da mesa e obrigatorio")
     private Integer numero_mesa;
     
-    @NotBlank(message = "Capacidade da mesa e obrigatoria")
+    @NotNull(message = "Capacidade da mesa e obrigatoria")
     private Integer capacidade;
 
     @NotBlank(message = "Status da Mesa e obrigatorio")

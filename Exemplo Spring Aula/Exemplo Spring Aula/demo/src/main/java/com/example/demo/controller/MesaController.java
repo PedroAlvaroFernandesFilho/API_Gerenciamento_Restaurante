@@ -58,12 +58,14 @@ public class MesaController {
         return ResponseEntity.ok(mesa);
     }
 
-    @Operation(summary = "Lista mesas com status Livre", description = "Lista mesas com status Livre")
+    @Operation(summary = "Lista mesas com status especifico", description = "Lista mesas com status Livre")
     @GetMapping("/disponiveis")
-    public ResponseEntity<MesaDTO> buscarPorStatus(@RequestParam StatusMesa status) {
-        Optional<MesaDTO> mesaDTO = mesaService.buscarPorStatus(status);
-        return mesaDTO.map(ResponseEntity::ok)
-                         .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<List<MesaDTO>> buscarPorStatus(@RequestParam StatusMesa status) {
+        List<MesaDTO> mesaDTO = mesaService.buscarPorStatus(status);
+        if (mesaDTO.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(mesaDTO);
     }
 
     @Operation(summary = "Busca Mesa por ID Especifico", description = "Obtém informações de uma mesa específica pelo ID")

@@ -2,9 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.Entities.Mesa;
 import com.example.demo.Enums.StatusMesa;
+import com.example.demo.Enums.StatusReserva;
 import com.example.demo.dto.MesaDTO;
 import com.example.demo.mapper.MesaMapper;
 import com.example.demo.repository.IMesaRepository;
+import com.example.demo.repository.IReservaRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -24,6 +26,8 @@ public class MesaService {
     @Autowired
     private MesaMapper mesaMapper;
     
+    @Autowired
+    private IReservaRepository reservaRepository;
 
     public List<MesaDTO> listarTodos() {
         return mesaMapper.toDTOList(mesaRepository.findAll());
@@ -39,12 +43,21 @@ public class MesaService {
     }
 
     public void deletar(Long id) {
-        mesaRepository.deleteById(id);
+        Mesa mesa = mesaRepository.findById(id)
+                                  .orElseThrow(() -> new RuntimeException("Mesa não encontrada utilizando id: " + id));       
+        long reservasAtivas = reservaRepository.countReservasAtivas(
+            id, StatusReserva.CONCLUIDA, StatusReserva.CANCELADA);
+
+        if (reservasAtivas > 0) {
+            throw new RuntimeException("Não é possivel inativar a mesa. Ela possui " + reservasAtivas + "reservas em aberto.");
+        }
+        mesa.setStatus(StatusMesa.INATIVA);
+        mesaRepository.save(mesa);
     }
 
-    public Optional<MesaDTO> buscarPorStatus(StatusMesa stastus) {
-        Optional<MesaDTO> mesa = mesaRepository.findByStatus(status);
-        return mesaMapper.toDTO(mesa);
+    public List<MesaDTO> buscarPorStatus(StatusMesa status) {
+        List<Mesa> mesaStatusOptional = mesaRepository.findByStatus(status);
+        return mesaMapper.toDTOList(mesaStatusOptional);
     }
 
     public MesaDTO atualizarMesa(Long id, MesaDTO mesaDTO){
