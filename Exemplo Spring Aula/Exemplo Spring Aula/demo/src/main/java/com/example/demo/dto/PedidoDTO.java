@@ -1,6 +1,9 @@
 package com.example.demo.dto;
 
+import com.example.demo.Enums.StatusPedido;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class PedidoDTO {
 
@@ -9,6 +12,9 @@ public class PedidoDTO {
     private Long itemId;
     private Integer quantidade;
     private BigDecimal valorTotal;
+    private StatusPedido status;
+    private LocalDate dataPedido;
+    private LocalTime horaPedido;
 
     public Long getId() {
         return id;
@@ -48,5 +54,29 @@ public class PedidoDTO {
 
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public StatusPedido getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusPedido status) {
+        this.status = status;
+    }
+
+    public LocalDate getDataPedido() {
+        return dataPedido;
+    }
+
+    public void setDataPedido(LocalDate dataPedido) {
+        this.dataPedido = dataPedido;
+    }
+
+    public LocalTime getHoraPedido() {
+        return horaPedido;
+    }
+
+    public void setHoraPedido(LocalTime horaPedido) {
+        this.horaPedido = horaPedido;
     }
 }

@@ -1,7 +1,10 @@
 package com.example.demo.Entities;
 
+import com.example.demo.Enums.StatusPedido;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 public class Pedido {
@@ -21,6 +24,16 @@ public class Pedido {
     private Integer quantidade;
 
     private BigDecimal valorTotal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusPedido status;
+
+    @Column(nullable = false)
+    private LocalDate dataPedido;
+
+    @Column(nullable = false)
+    private LocalTime horaPedido;
 
     public Long getId() {
         return id;
@@ -60,5 +73,29 @@ public class Pedido {
 
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public StatusPedido getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusPedido status) {
+        this.status = status;
+    }
+
+    public LocalDate getDataPedido() {
+        return dataPedido;
+    }
+
+    public void setDataPedido(LocalDate dataPedido) {
+        this.dataPedido = dataPedido;
+    }
+
+    public LocalTime getHoraPedido() {
+        return horaPedido;
+    }
+
+    public void setHoraPedido(LocalTime horaPedido) {
+        this.horaPedido = horaPedido;
     }
 }

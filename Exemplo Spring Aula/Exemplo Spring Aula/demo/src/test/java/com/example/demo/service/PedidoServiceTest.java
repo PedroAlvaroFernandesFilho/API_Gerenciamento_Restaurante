@@ -65,7 +65,7 @@ class PedidoServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Pedido pedido = pedidoService.criarPedido(1L, 1L, 2);
+        Pedido pedido = pedidoService.criarPedido(1L, 1L, 2, null);
 
         assertThat(pedido).isNotNull();
         assertThat(pedido.getReserva()).isEqualTo(reserva);
@@ -81,7 +81,7 @@ class PedidoServiceTest {
         when(reservaRepository.findById(1L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> pedidoService.criarPedido(1L, 1L, 1));
+                () -> pedidoService.criarPedido(1L, 1L, 1, null));
 
         assertThat(exception.getMessage()).contains("Reserva não encontrada");
         verify(pedidoRepository, never()).save(any());
@@ -93,7 +93,7 @@ class PedidoServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> pedidoService.criarPedido(1L, 1L, 1));
+                () -> pedidoService.criarPedido(1L, 1L, 1, null));
 
         assertThat(exception.getMessage()).contains("Item não encontrado");
         verify(pedidoRepository, never()).save(any());
@@ -105,7 +105,7 @@ class PedidoServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> pedidoService.criarPedido(1L, 1L, 0));
+                () -> pedidoService.criarPedido(1L, 1L, 0, null));
 
         assertThat(exception.getMessage()).contains("Quantidade inválida");
         verify(pedidoRepository, never()).save(any());
@@ -163,6 +163,10 @@ class PedidoServiceTest {
 
     @Test
     void deletar_deveChamarRepositorio() {
+        Pedido pedido = new Pedido();
+        pedido.setId(4L);
+        pedido.setStatus(com.example.demo.Enums.StatusPedido.CONFIRMADO);
+        when(pedidoRepository.findById(4L)).thenReturn(Optional.of(pedido));
         doNothing().when(pedidoRepository).deleteById(4L);
 
         pedidoService.deletar(4L);

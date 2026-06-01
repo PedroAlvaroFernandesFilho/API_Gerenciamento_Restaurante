@@ -12,6 +12,9 @@ public class PedidoMapper {
         dto.setItemId(pedido.getItem().getId());
         dto.setQuantidade(pedido.getQuantidade());
         dto.setValorTotal(pedido.getValorTotal());
+        dto.setStatus(pedido.getStatus());
+        dto.setDataPedido(pedido.getDataPedido());
+        dto.setHoraPedido(pedido.getHoraPedido());
         return dto;
     }
 }
