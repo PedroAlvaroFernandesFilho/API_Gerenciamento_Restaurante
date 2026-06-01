@@ -52,9 +52,16 @@ public class ReservaController {
 
     @Operation(summary = "Lista todas as reservas", description = "Retorna uma lista com todas as reservas")
     @GetMapping
-    public ResponseEntity<List<ReservaDTO>> listarReservas() {
+    public ResponseEntity<ApiResponse<?>> listarReservas() {
         List<ReservaDTO> reserva = reservaService.listarTodos();
-        return ResponseEntity.ok(reserva);
+        
+        if (reserva == null || reserva.isEmpty()){
+            ApiResponse<String> responseVazia = new ApiResponse<>("Nenhuma reserva listada");
+            return ResponseEntity.ok(responseVazia);
+        }
+        
+        ApiResponse<List<ReservaDTO>> responseComDados = new ApiResponse<>(reserva);
+        return ResponseEntity.ok(responseComDados);
     }
     
     @Operation(summary = "Busca reserva por ID Especifico", description = "Obtém informações de uma reserva específica pelo ID")
@@ -79,9 +86,20 @@ public class ReservaController {
     
     @Operation(summary = "Atualiza Status da Reserva", description = "Atualiza o status de uma reserva para Confirmada, Cancelada ou Concluída.")    
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ReservaDTO> atualizaStatus(@PathVariable Long id, @RequestBody ReservaStatusRequest request) {
-        ReservaDTO statusAtualizado = reservaService.atualizaStatus(id, request.status());
-        return ResponseEntity.ok(statusAtualizado);
+    public ResponseEntity<ApiResponse<ReservaDTO>> atualizaStatus(@PathVariable Long id, @RequestBody ReservaStatusRequest request) {
+        try {
+            ReservaDTO statusAtualizado = reservaService.atualizaStatus(id, request.status());
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(statusAtualizado);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            ErrorResponse errorResponse = new ErrorResponse("Reserva ou Status invalido", e.getMessage());
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(errorResponse);
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse("Erro inesperado", e.getMessage());
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(errorResponse);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Operation(summary = "Deleta/Cancela uma reserva", description = "Cancela uma reserva existente.")

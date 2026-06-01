@@ -47,6 +47,14 @@ public class ReservaService {
         Reserva reserva = reservaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("reserva não encontrada utilizando id: " + id));
 
+        if (reserva.getStatus() == novoStatus){
+            return reservaMapper.toDTO(reserva);
+        }
+
+        if (reserva.getStatus() == StatusReserva.CONCLUIDA || reserva.getStatus() == StatusReserva.CANCELADA){
+            throw new IllegalStateException("Não é permitido alterar o status de uma reserva que já está " + reserva.getStatus() + ".");
+        }
+
         reserva.setStatus(novoStatus);
         return reservaMapper.toDTO(reservaRepository.save(reserva));
     }
