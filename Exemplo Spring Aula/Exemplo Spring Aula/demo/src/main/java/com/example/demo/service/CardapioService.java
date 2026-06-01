@@ -1,61 +1,85 @@
 package com.example.demo.service;
 
 import com.example.demo.Entities.Cardapio;
+import com.example.demo.Enums.StatusItem;
 import com.example.demo.dto.CardapioDTO;
 import com.example.demo.mapper.CardapioMapper;
 import com.example.demo.repository.ICardapioRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CardapioService {
 
-    private final ICardapioRepository repository;
+    @Autowired
+    private ICardapioRepository cardapioRepository;
 
-    public CardapioService(ICardapioRepository repository) {
-        this.repository = repository;
-    }
-
-    
-    public Cardapio adicionar(CardapioDTO dto) {
+    public CardapioDTO adicionar(CardapioDTO dto) {
 
         Cardapio item = CardapioMapper.toEntity(dto);
 
-        return repository.save(item);
+        if (item.getEstoque() == 0) {
+            item.setStatus(StatusItem.INDISPONIVEL);
+        } else {
+            item.setStatus(StatusItem.DISPONIVEL);
+        }
+
+        Cardapio salvo = cardapioRepository.save(item);
+
+        return CardapioMapper.toDTO(salvo);
     }
 
-    
-    public List<Cardapio> listar() {
+    public List<CardapioDTO> listarTodos() {
 
-        return repository.findAll();
+        return cardapioRepository.findAll().stream()
+                .map(CardapioMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-   
-    public Cardapio buscarPorId(Long id) {
+    public Optional<CardapioDTO> buscarPorId(Long id) {
 
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item nao encontrado"));
+        return cardapioRepository.findById(id)
+                .map(CardapioMapper::toDTO);
     }
 
-    public Cardapio atualizar(Long id, CardapioDTO dto) {
+    public CardapioDTO atualizar(Long id, CardapioDTO dto) {
 
-        return repository.findById(id)
+        return cardapioRepository.findById(id)
                 .map(item -> {
 
                     item.setNome(dto.getNome());
                     item.setDescricao(dto.getDescricao());
                     item.setPreco(dto.getPreco());
+                    item.setEstoque(dto.getEstoque());
 
-                    return repository.save(item);
+                    if (item.getEstoque() == 0) {
+                        item.setStatus(StatusItem.INDISPONIVEL);
+                    } else {
+                        item.setStatus(StatusItem.DISPONIVEL);
+                    }
+
+                    Cardapio atualizado =
+                            cardapioRepository.save(item);
+
+                    return CardapioMapper.toDTO(atualizado);
                 })
-                .orElseThrow(() -> new RuntimeException("Item nao encontrado"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Item nao encontrado"));
     }
 
-   
     public void deletar(Long id) {
 
-        repository.deleteById(id);
+        Cardapio item = cardapioRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Item nao encontrado"));
+
+        item.setStatus(StatusItem.INDISPONIVEL);
+
+        cardapioRepository.save(item);
     }
 }
