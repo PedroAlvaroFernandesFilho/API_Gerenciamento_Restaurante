@@ -6,7 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.example.demo.dto.ReservaDTO;
 import com.example.demo.service.ReservaService;
@@ -104,8 +107,44 @@ public class ReservaController {
 
     @Operation(summary = "Deleta/Cancela uma reserva", description = "Cancela uma reserva existente.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarReserva(@PathVariable Long id) {
-        reservaService.deletar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ApiResponse<ReservaDTO>> deletarReserva(@PathVariable Long id) {
+        try {
+            ReservaDTO reservaCancelada = reservaService.deletar(id);
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(reservaCancelada);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            ErrorResponse errorResponse = new ErrorResponse("Regra de cancelamento", e.getMessage());
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(errorResponse);
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse("Erro inesperado", e.getMessage());
+            ApiResponse<ReservaDTO> response = new ApiResponse<>(errorResponse);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // tratadores de erros nos inputs
+
+    // trata texto quando devia ser ID
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String retornaErro = String.format("O parametro recebeu um valor invalido. Certifique-se de enviar um numero valido." + ex.getName());
+        ErrorResponse errorResponse = new ErrorResponse("Formato invalido", retornaErro);
+        return ResponseEntity.badRequest().body(new ApiResponse<>(errorResponse));
+    }
+
+    // trata quando o input e muito grande
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleJsonError(HttpMessageNotReadableException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Erro de Leitura", "A requisição contém dados invalidos.");
+        return ResponseEntity.badRequest().body(new ApiResponse<>(errorResponse));
+    }
+
+    // captura violações das anotações na DTO (min, max, notnull)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidationError(MethodArgumentNotValidException ex) {
+        String retornaErro = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        ErrorResponse errorResponse = new ErrorResponse("Validação de dados", retornaErro);
+        return ResponseEntity.badRequest().body(new ApiResponse<>(errorResponse));
     }
 }
