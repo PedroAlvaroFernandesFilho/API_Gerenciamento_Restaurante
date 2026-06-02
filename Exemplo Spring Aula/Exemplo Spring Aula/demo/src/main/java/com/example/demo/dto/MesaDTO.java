@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ public class MesaDTO {
     private Integer capacidade;
 
     @NotBlank(message = "Status da Mesa e obrigatorio")
+    @Size(max = 20, message = "O Status inserido é muito longo.")
     private String status;
 
 }

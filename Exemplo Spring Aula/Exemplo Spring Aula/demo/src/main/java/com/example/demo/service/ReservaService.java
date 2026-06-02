@@ -90,21 +90,45 @@ public class ReservaService {
         if (horaInput == null) {
             throw new IllegalArgumentException("O horário é inválido.");
         }
+
+        LocalTime agora = LocalTime.now();
         
-        // Se a reserva for para o dia de hoje, valida se a hora não ficou no passado
-        if (dataInput.isEqual(hoje) && horaInput.isBefore(LocalTime.now())) {
+        if (dataInput.isEqual(hoje) && horaInput.isBefore(agora)) {
             throw new IllegalArgumentException("O horário é inválido.");
         }
         
         // padronizando o status
         String statusInput = reservaDTO.getStatus();
         
-        // Nota: Sua classe 'StatusReserva.java' usa o termo feminino CONFIRMADA
         if (statusInput == null || statusInput.trim().isEmpty() || statusInput.equalsIgnoreCase("confirmado") || statusInput.equalsIgnoreCase("confirmada")) {
             reservaDTO.setStatus(StatusReserva.CONFIRMADA.name());
         } else {
             throw new IllegalArgumentException("Status inválido.");
         }
+
+        boolean colocarComoOcupada = false;
+
+        if (dataInput.isEqual(hoje)) {
+            LocalTime limiteOcupada = agora.plusMinutes(5);
+
+            
+            if (limiteOcupada.isBefore(agora)) {
+                
+                colocarComoOcupada = true;
+            } else {
+                
+                colocarComoOcupada = !horaInput.isAfter(limiteOcupada);
+            }
+        }
+
+        if (colocarComoOcupada) {
+            mesa.setStatus(StatusMesa.OCUPADA);
+        } else {
+            
+            mesa.setStatus(StatusMesa.RESERVADA);
+        }
+        
+        mesaRepository.save(mesa); 
 
         Reserva reserva = reservaMapper.toEntity(reservaDTO);
         return reservaMapper.toDTO(reservaRepository.save(reserva));
