@@ -37,11 +37,25 @@ public class ClienteService {
         if (clienteDTO.getNome() == null || clienteDTO.getNome().trim().isEmpty() || clienteDTO.getNome().equals("string")) {
             throw new IllegalArgumentException("O nome é obrigatório e não pode ser 'string'.");
         }
+        if (clienteDTO.getNome().length() > 100) {
+            throw new IllegalArgumentException("O nome deve ter no máximo 100 caracteres.");
+        }
+
         if (clienteDTO.getEmail() == null || clienteDTO.getEmail().trim().isEmpty() || clienteDTO.getEmail().equals("string")) {
             throw new IllegalArgumentException("O e-mail é obrigatório e não pode ser 'string'.");
         }
+        if (clienteDTO.getEmail().length() > 100) {
+            throw new IllegalArgumentException("O e-mail deve ter no máximo 100 caracteres.");
+        }
+
         if (clienteDTO.getTelefone() == null || clienteDTO.getTelefone().trim().isEmpty() || clienteDTO.getTelefone().equals("string")) {
             throw new IllegalArgumentException("O telefone é obrigatório e não pode ser 'string'.");
+        }
+        if (!clienteDTO.getTelefone().matches("^[0-9]+$")) {
+            throw new IllegalArgumentException("O telefone deve conter apenas números.");
+        }
+        if (clienteDTO.getTelefone().length() > 11) {
+            throw new IllegalArgumentException("O telefone deve ter no máximo 11 caracteres.");
         }
 
         if (clienteDTO.getId() != null && clienteDTO.getId() != 0 && clienteRepository.existsById(clienteDTO.getId())) {
@@ -85,16 +99,28 @@ public class ClienteService {
         boolean houveAlteracao = false;
 
         if (clienteDTO.getNome() != null && !clienteDTO.getNome().trim().isEmpty() && !clienteDTO.getNome().equals("string")) {
+            if (clienteDTO.getNome().length() > 100) {
+                throw new IllegalArgumentException("O nome deve ter no máximo 100 caracteres.");
+            }
             clienteExistente.setNome(clienteDTO.getNome());
             houveAlteracao = true;
         }
         
         if (clienteDTO.getEmail() != null && !clienteDTO.getEmail().trim().isEmpty() && !clienteDTO.getEmail().equals("string")) {
+            if (clienteDTO.getEmail().length() > 100) {
+                throw new IllegalArgumentException("O e-mail deve ter no máximo 100 caracteres.");
+            }
             clienteExistente.setEmail(clienteDTO.getEmail());
             houveAlteracao = true;
         }
         
         if (clienteDTO.getTelefone() != null && !clienteDTO.getTelefone().trim().isEmpty() && !clienteDTO.getTelefone().equals("string")) {
+            if (!clienteDTO.getTelefone().matches("^[0-9]+$")) {
+                throw new IllegalArgumentException("O telefone deve conter apenas números.");
+            }
+            if (clienteDTO.getTelefone().length() > 11) {
+                throw new IllegalArgumentException("O telefone deve ter no máximo 11 caracteres.");
+            }
             clienteExistente.setTelefone(clienteDTO.getTelefone());
             houveAlteracao = true;
         }
