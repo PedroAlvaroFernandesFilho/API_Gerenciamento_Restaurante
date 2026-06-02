@@ -2,11 +2,16 @@ package com.example.demo.Entities;
 
 import com.example.demo.Enums.StatusPedido;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Pedido {
 
     @Id
@@ -35,67 +40,4 @@ public class Pedido {
     @Column(nullable = false)
     private LocalTime horaPedido;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Reserva getReserva() {
-        return reserva;
-    }
-
-    public void setReserva(Reserva reserva) {
-        this.reserva = reserva;
-    }
-
-    public Cardapio getItem() {
-        return item;
-    }
-
-    public void setItem(Cardapio item) {
-        this.item = item;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public BigDecimal getValorTotal() {
-        return valorTotal;
-    }
-
-    public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    public StatusPedido getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusPedido status) {
-        this.status = status;
-    }
-
-    public LocalDate getDataPedido() {
-        return dataPedido;
-    }
-
-    public void setDataPedido(LocalDate dataPedido) {
-        this.dataPedido = dataPedido;
-    }
-
-    public LocalTime getHoraPedido() {
-        return horaPedido;
-    }
-
-    public void setHoraPedido(LocalTime horaPedido) {
-        this.horaPedido = horaPedido;
-    }
 }

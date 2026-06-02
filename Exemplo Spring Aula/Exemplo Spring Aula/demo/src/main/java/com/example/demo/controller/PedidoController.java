@@ -23,25 +23,32 @@ import jakarta.validation.Valid;
 public class PedidoController {
 
     private final PedidoService pedidoService;
+    private final PedidoMapper pedidoMapper;
 
-    public PedidoController(PedidoService pedidoService) {
+    public PedidoController(PedidoService pedidoService, PedidoMapper pedidoMapper) {
         this.pedidoService = pedidoService;
+        this.pedidoMapper = pedidoMapper;
     }
 
     @Operation(summary = "Lista todos os pedidos", description = "Retorna todos os pedidos registrados")
     @GetMapping
-    public ResponseEntity<List<PedidoDTO>> listarPedidos() {
+    public ResponseEntity<ApiResponse<?>> listarPedidos() {
         List<PedidoDTO> pedidoDTOs = pedidoService.listarTodos()
                 .stream()
-                .map(PedidoMapper::toDTO)
+                .map(pedidoMapper::toDTO)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(pedidoDTOs);
+
+        if (pedidoDTOs.isEmpty()) {
+            return ResponseEntity.ok(new ApiResponse<>("Nenhum pedido listado"));
+        }
+
+        return ResponseEntity.ok(new ApiResponse<>(pedidoDTOs));
     }
 
     @Operation(summary = "Busca um pedido por ID", description = "Retorna os dados de um pedido específico")
     @GetMapping("/{id}")
     public ResponseEntity<PedidoDTO> buscarPedidoPorId(@PathVariable Long id) {
-        PedidoDTO dto = PedidoMapper.toDTO(pedidoService.buscarPorId(id));
+        PedidoDTO dto = pedidoMapper.toDTO(pedidoService.buscarPorId(id));
         return ResponseEntity.ok(dto);
     }
 
@@ -49,8 +56,8 @@ public class PedidoController {
     @PostMapping
     public ResponseEntity<ApiResponse<PedidoDTO>> criarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
         try {
-            var pedido = pedidoService.criarPedido(pedidoDTO.getReservaId(), pedidoDTO.getItemId(), pedidoDTO.getQuantidade(), pedidoDTO.getId());
-            PedidoDTO dto = PedidoMapper.toDTO(pedido);
+            var pedido = pedidoService.criarPedido(pedidoDTO);
+            PedidoDTO dto = pedidoMapper.toDTO(pedido);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(dto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(new ErrorResponse("Argumento inválido", e.getMessage())));
@@ -63,10 +70,10 @@ public class PedidoController {
 
     @Operation(summary = "Atualiza um pedido", description = "Atualiza item, quantidade ou status do pedido")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<PedidoDTO>> atualizarPedido(@PathVariable Long id, @RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<ApiResponse<PedidoDTO>> atualizarPedido(@PathVariable Long id, @Valid @RequestBody PedidoDTO pedidoDTO) {
         try {
-            var pedido = pedidoService.atualizarPedido(id, pedidoDTO.getItemId(), pedidoDTO.getQuantidade(), pedidoDTO.getStatus());
-            PedidoDTO dto = PedidoMapper.toDTO(pedido);
+            var pedido = pedidoService.atualizarPedido(id, pedidoDTO);
+            PedidoDTO dto = pedidoMapper.toDTO(pedido);
             return ResponseEntity.ok(new ApiResponse<>(dto));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao atualizar pedido", e.getMessage())));
@@ -77,15 +84,20 @@ public class PedidoController {
 
     @Operation(summary = "Lista pedidos por reserva", description = "Retorna todos os pedidos vinculados a uma reserva")
     @GetMapping("/reserva/{reservaId}")
-    public ResponseEntity<ApiResponse<List<PedidoDTO>>> listarPorReserva(@PathVariable Long reservaId) {
+    public ResponseEntity<ApiResponse<?>> listarPorReserva(@PathVariable Long reservaId) {
         try {
             List<PedidoDTO> pedidos = pedidoService.listarPorReserva(reservaId)
                     .stream()
-                    .map(PedidoMapper::toDTO)
+                    .map(pedidoMapper::toDTO)
                     .collect(Collectors.toList());
+
+            if (pedidos.isEmpty()) {
+                return ResponseEntity.ok(new ApiResponse<>("Nenhum pedido listado"));
+            }
+
             return ResponseEntity.ok(new ApiResponse<>(pedidos));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao listar pedidos", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao buscar pedidos", e.getMessage())));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
         }
