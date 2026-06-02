@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,11 +19,13 @@ public class MesaDTO {
     @NotNull(message = "Numero da mesa e obrigatorio")
     @Min(value = 1, message = "O numero da mesa deve ser maior que 0 (zero)")
     @Max(value = 100000, message = "O numero da mesa excedeu o tamanho permitido")
+    @Schema(example = "0")
     private Integer numero_mesa;
     
     @NotNull(message = "Capacidade da mesa e obrigatoria")
     @Min(value = 1, message = "A capacidade deve ser maior que 0 (zero)")
     @Max(value = 50, message = "A capacidade excedeu o tamanho permitido")
+    @Schema(example = "0")
     private Integer capacidade;
 
     @NotBlank(message = "Status da Mesa e obrigatorio")

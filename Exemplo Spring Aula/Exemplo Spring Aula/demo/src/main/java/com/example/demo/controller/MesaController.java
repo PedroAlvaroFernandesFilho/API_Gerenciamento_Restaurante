@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.Enums.StatusMesa;
 import com.example.demo.dto.MesaDTO;
+import com.example.demo.dto.ReservaDTO;
 import com.example.demo.service.MesaService;
 import com.example.demo.service.Utils.ApiResponse;
 import com.example.demo.service.Utils.ErrorResponse;
@@ -53,9 +54,16 @@ public class MesaController {
 
     @Operation(summary = "Lista todas as mesas", description = "Retorna uma lista com todas as mesas cadastradas")
     @GetMapping
-    public ResponseEntity<List<MesaDTO>> listarMesas() {
+    public ResponseEntity<ApiResponse<?>> listarMesas() {
         List<MesaDTO> mesa = mesaService.listarTodos();
-        return ResponseEntity.ok(mesa);
+        
+        if (mesa == null || mesa.isEmpty()){
+            ApiResponse<String> responseVazia = new ApiResponse<>("Nenhuma mesa listada");
+            return ResponseEntity.ok(responseVazia);
+        }
+        
+        ApiResponse<List<MesaDTO>> responseComDados = new ApiResponse<>(mesa);
+        return ResponseEntity.ok(responseComDados);
     }
 
     @Operation(summary = "Lista mesas com status especifico", description = "Lista mesas com status Livre")
