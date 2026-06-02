@@ -97,23 +97,41 @@ public class CardapioController {
     @Operation(summary = "Atualiza item do Cardapio",
             description = "Atualiza um item existente")
     @PutMapping("/{id}")
-    public ResponseEntity<CardapioDTO> atualizarCardapio(
+    public ResponseEntity<?> atualizarCardapio(
             @PathVariable Long id,
             @Valid @RequestBody CardapioDTO cardapioDTO) {
 
-        CardapioDTO cardapioAtualizado =
-                cardapioService.atualizar(id, cardapioDTO);
+        try {
 
-        return ResponseEntity.ok(cardapioAtualizado);
+            CardapioDTO cardapioAtualizado =
+                    cardapioService.atualizar(id, cardapioDTO);
+
+            return ResponseEntity.ok(cardapioAtualizado);
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Item nao encontrado");
+        }
     }
 
     @Operation(summary = "Remove um item do Cardapio",
             description = "Remove um item existente")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCardapio(@PathVariable Long id) {
+    public ResponseEntity<?> deletarCardapio(@PathVariable Long id) {
 
-        cardapioService.deletar(id);
+        try {
 
-        return ResponseEntity.noContent().build();
+            cardapioService.deletar(id);
+
+            return ResponseEntity.noContent().build();
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Item nao encontrado");
+        }
     }
 }
