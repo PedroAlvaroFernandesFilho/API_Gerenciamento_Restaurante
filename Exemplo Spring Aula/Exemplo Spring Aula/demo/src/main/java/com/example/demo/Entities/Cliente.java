@@ -32,7 +32,7 @@ public class Cliente {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 11)
+    @Column(nullable = false, length = 13)
     private String telefone;
 
     @Enumerated(EnumType.STRING)

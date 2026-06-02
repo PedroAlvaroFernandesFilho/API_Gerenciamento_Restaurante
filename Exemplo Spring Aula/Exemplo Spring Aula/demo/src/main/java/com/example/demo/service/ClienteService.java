@@ -51,11 +51,11 @@ public class ClienteService {
         if (clienteDTO.getTelefone() == null || clienteDTO.getTelefone().trim().isEmpty() || clienteDTO.getTelefone().equals("string")) {
             throw new IllegalArgumentException("O telefone é obrigatório e não pode ser 'string'.");
         }
-        if (!clienteDTO.getTelefone().matches("^[0-9]+$")) {
-            throw new IllegalArgumentException("O telefone deve conter apenas números.");
+        if (!clienteDTO.getTelefone().matches("^[0-9\\\\s\\\\-\\\\(\\\\)]+$")) {
+            throw new IllegalArgumentException("O telefone deve conter apenas caracteres validos.");
         }
-        if (clienteDTO.getTelefone().length() > 11) {
-            throw new IllegalArgumentException("O telefone deve ter no máximo 11 caracteres.");
+        if (clienteDTO.getTelefone().length() > 13) {
+            throw new IllegalArgumentException("O telefone deve ter no máximo 13 caracteres.");
         }
 
         if (clienteDTO.getId() != null && clienteDTO.getId() != 0 && clienteRepository.existsById(clienteDTO.getId())) {
@@ -115,11 +115,11 @@ public class ClienteService {
         }
         
         if (clienteDTO.getTelefone() != null && !clienteDTO.getTelefone().trim().isEmpty() && !clienteDTO.getTelefone().equals("string")) {
-            if (!clienteDTO.getTelefone().matches("^[0-9]+$")) {
-                throw new IllegalArgumentException("O telefone deve conter apenas números.");
+            if (!clienteDTO.getTelefone().matches("^[0-9\\\\s\\\\-\\\\(\\\\)]+$")) {
+                throw new IllegalArgumentException("O telefone deve conter apenas caracteres válidos.");
             }
-            if (clienteDTO.getTelefone().length() > 11) {
-                throw new IllegalArgumentException("O telefone deve ter no máximo 11 caracteres.");
+            if (clienteDTO.getTelefone().length() > 13) {
+                throw new IllegalArgumentException("O telefone deve ter no máximo 13 caracteres.");
             }
             clienteExistente.setTelefone(clienteDTO.getTelefone());
             houveAlteracao = true;
