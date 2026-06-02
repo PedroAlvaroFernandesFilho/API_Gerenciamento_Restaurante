@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PedidoService {
@@ -21,28 +22,28 @@ public class PedidoService {
     private final IPedidoRepository pedidoRepository;
     private final IReservaRepository reservaRepository;
     private final ICardapioRepository itemRepository;
-    private final PedidoMaper pedidoMapper;
+    private final PedidoMaper PedidoMapper;
 
     public PedidoService(IPedidoRepository pedidoRepository,
                         IReservaRepository reservaRepository,
                         ICardapioRepository itemRepository,
-                        PedidoMaper pedidoMapper) {
+                        PedidoMaper PedidoMapper) {
         this.pedidoRepository = pedidoRepository;
         this.reservaRepository = reservaRepository;
         this.itemRepository = itemRepository;
-        this.pedidoMapper = pedidoMapper;
+        this.PedidoMapper = PedidoMapper;
     }
 
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
     }
 
-    public Pedido buscarPorId(Long id) {
+    public Pedido buscarPorId(long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
     }
 
-    public List<Pedido> listarPorReserva(Long reservaId) {
+    public List<Pedido> listarPorReserva(long reservaId) {
         if (!reservaRepository.existsById(reservaId)) {
             throw new RuntimeException("Reserva não encontrada");
         }
@@ -50,17 +51,19 @@ public class PedidoService {
     }
 
     public Pedido criarPedido(PedidoDTO pedidoDTO) {
-        Reserva reserva = reservaRepository.findById(pedidoDTO.getReservaId())
+        Long reservaId = Objects.requireNonNull(pedidoDTO.getReservaId(), "ReservaId não pode ser nulo");
+        Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
 
-        Cardapio item = itemRepository.findById(pedidoDTO.getItemId())
+        Long itemId = Objects.requireNonNull(pedidoDTO.getItemId(), "ItemId não pode ser nulo");
+        Cardapio item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
 
         if (pedidoDTO.getQuantidade() == null || pedidoDTO.getQuantidade() <= 0) {
             throw new RuntimeException("Quantidade inválida");
         }
 
-        Pedido pedido = pedidoMapper.toEntity(pedidoDTO);
+        Pedido pedido = PedidoMapper.toEntity(pedidoDTO);
         pedido.setReserva(reserva);
         pedido.setItem(item);
         BigDecimal valorTotal = item.getPreco().multiply(BigDecimal.valueOf(pedidoDTO.getQuantidade()));
@@ -75,7 +78,7 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    public void deletar(Long id) {
+    public void deletar(long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
         pedido.setStatus(com.example.demo.Enums.StatusPedido.CANCELADO);
