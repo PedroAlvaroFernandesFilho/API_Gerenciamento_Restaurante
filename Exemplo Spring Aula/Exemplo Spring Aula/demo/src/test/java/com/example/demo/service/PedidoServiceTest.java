@@ -4,7 +4,7 @@ import com.example.demo.Entities.Cardapio;
 import com.example.demo.Entities.Pedido;
 import com.example.demo.Entities.Reserva;
 import com.example.demo.dto.PedidoDTO;
-import com.example.demo.mapper.PedidoMapper;
+import com.example.demo.mapper.PedidoMaper;
 import com.example.demo.repository.ICardapioRepository;
 import com.example.demo.repository.IPedidoRepository;
 import com.example.demo.repository.IReservaRepository;
@@ -40,7 +40,7 @@ class PedidoServiceTest {
     private ICardapioRepository itemRepository;
 
     @Mock
-    private PedidoMapper pedidoMapper;
+    private PedidoMaper PedidoMaper;
 
     @InjectMocks
     private PedidoService pedidoService;
@@ -77,7 +77,7 @@ class PedidoServiceTest {
 
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
-        when(pedidoMapper.toEntity(eq(pedidoDTO))).thenReturn(entity);
+        when(PedidoMaper.toEntity(eq(pedidoDTO))).thenReturn(entity);
         when(pedidoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         Pedido pedido = pedidoService.criarPedido(pedidoDTO);

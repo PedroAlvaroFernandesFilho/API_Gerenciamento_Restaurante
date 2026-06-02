@@ -11,7 +11,7 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface PedidoMapper {
+public interface PedidoMaper {
 
     @Mapping(source = "reserva.id", target = "reservaId")
     @Mapping(source = "item.id", target = "itemId")

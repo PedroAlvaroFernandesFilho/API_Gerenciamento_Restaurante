@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.PedidoDTO;
-import com.example.demo.mapper.PedidoMapper;
+import com.example.demo.mapper.PedidoMaper;
 import com.example.demo.service.PedidoService;
 import com.example.demo.service.Utils.ApiResponse;
 import com.example.demo.service.Utils.ErrorResponse;
@@ -23,96 +23,76 @@ import jakarta.validation.Valid;
 public class PedidoController {
 
     private final PedidoService pedidoService;
-    private final PedidoMapper pedidoMapper;
+    private final PedidoMaper PedidoMaper;
 
-    public PedidoController(PedidoService pedidoService, PedidoMapper pedidoMapper) {
+    public PedidoController(PedidoService pedidoService, PedidoMaper PedidoMaper) {
         this.pedidoService = pedidoService;
-        this.pedidoMapper = pedidoMapper;
+        this.PedidoMaper = PedidoMaper;
     }
 
     @Operation(summary = "Lista todos os pedidos", description = "Retorna todos os pedidos registrados")
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> listarPedidos() {
-        List<PedidoDTO> pedidoDTOs = pedidoService.listarTodos()
-                .stream()
-                .map(pedidoMapper::toDTO)
-                .collect(Collectors.toList());
-
-        if (pedidoDTOs.isEmpty()) {
-            return ResponseEntity.ok(new ApiResponse<>("Nenhum pedido listado"));
-        }
-
-        return ResponseEntity.ok(new ApiResponse<>(pedidoDTOs));
-    }
-
-    @Operation(summary = "Busca um pedido por ID", description = "Retorna os dados de um pedido específico")
-    @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> buscarPedidoPorId(@PathVariable Long id) {
-        PedidoDTO dto = pedidoMapper.toDTO(pedidoService.buscarPorId(id));
-        return ResponseEntity.ok(dto);
-    }
-
-    @Operation(summary = "Cria um novo pedido", description = "Registra um pedido vinculado a reserva e item do cardápio")
-    @PostMapping
-    public ResponseEntity<ApiResponse<PedidoDTO>> criarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<ApiResponse<List<PedidoDTO>>> listarPedidos() {
         try {
-            var pedido = pedidoService.criarPedido(pedidoDTO);
-            PedidoDTO dto = pedidoMapper.toDTO(pedido);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(dto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(new ErrorResponse("Argumento inválido", e.getMessage())));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao criar pedido", e.getMessage())));
+            List<PedidoDTO> pedidoDTOs = pedidoService.listarTodos()
+                    .stream()
+                    .map(PedidoMaper::toDTO)
+                    .collect(Collectors.toList());
+            
+            // Correção: Agora a lista está corretamente envelopada no ApiResponse
+            return ResponseEntity.ok(new ApiResponse<>(pedidoDTOs)); 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
         }
     }
 
-    @Operation(summary = "Atualiza um pedido", description = "Atualiza item, quantidade ou status do pedido")
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<PedidoDTO>> atualizarPedido(@PathVariable Long id, @Valid @RequestBody PedidoDTO pedidoDTO) {
-        try {
-            var pedido = pedidoService.atualizarPedido(id, pedidoDTO);
-            PedidoDTO dto = pedidoMapper.toDTO(pedido);
-            return ResponseEntity.ok(new ApiResponse<>(dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao atualizar pedido", e.getMessage())));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
-        }
-    }
-
-    @Operation(summary = "Lista pedidos por reserva", description = "Retorna todos os pedidos vinculados a uma reserva")
+    @Operation(summary = "Lista pedidos por reserva", description = "Retorna todos os pedidos de uma reserva específica")
     @GetMapping("/reserva/{reservaId}")
-    public ResponseEntity<ApiResponse<?>> listarPorReserva(@PathVariable Long reservaId) {
+    public ResponseEntity<ApiResponse<List<PedidoDTO>>> listarPorReserva(@PathVariable Long reservaId) {
         try {
             List<PedidoDTO> pedidos = pedidoService.listarPorReserva(reservaId)
                     .stream()
-                    .map(pedidoMapper::toDTO)
+                    .map(PedidoMaper::toDTO)
                     .collect(Collectors.toList());
-
-            if (pedidos.isEmpty()) {
-                return ResponseEntity.ok(new ApiResponse<>("Nenhum pedido listado"));
-            }
 
             return ResponseEntity.ok(new ApiResponse<>(pedidos));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao buscar pedidos", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro ao buscar pedidos", e.getMessage())));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
         }
     }
 
-    @Operation(summary = "Deleta um pedido", description = "Remove um pedido pelo ID")
+    @Operation(summary = "Cria um novo pedido", description = "Cadastra um pedido associado a uma reserva e a um item")
+    @PostMapping
+    public ResponseEntity<ApiResponse<PedidoDTO>> criarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
+        try {
+            PedidoDTO savedPedido = PedidoMaper.toDTO(pedidoService.criarPedido(pedidoDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(savedPedido));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(new ErrorResponse("Argumento inválido", e.getMessage())));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
+        }
+    }
+
+    @Operation(summary = "Deleta um pedido", description = "Cancela logicamente um pedido pelo ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deletarPedido(@PathVariable Long id) {
         try {
             pedidoService.deletar(id);
             return ResponseEntity.ok(new ApiResponse<>("Pedido deletado com sucesso"));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(new ErrorResponse("Erro ao deletar pedido", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro ao deletar pedido", e.getMessage())));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(new ErrorResponse("Erro interno", e.getMessage())));
         }
     }
 }
